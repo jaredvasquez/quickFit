@@ -12,10 +12,10 @@
  #                                                                         #
  ###########################################################################
 
-# Makefile updated by Hongtao Yang on Jan 23, 2017
+# Makefile updated by Jared Vasquez on Jan 29th, 2017
 # Package information
-APP = manager
-LIBRARY = manager
+APP = quickFit
+LIBRARY = quickFit
 OBJDIR  = obj
 DEPDIR  = $(OBJDIR)/dep
 SRCDIR  = src
