@@ -8,6 +8,7 @@
 #include "inc/auxUtils.h"
 
 
+std::string _outputFile = "";
 std::string _inputFile = "";
 std::string _minAlgo  = "Minuit2";
 std::string _dataName = "combData";
@@ -33,24 +34,36 @@ int main( int argc, char** argv )
   po::options_description desc( "quickFit options" );
   desc.add_options()
     // Input Options 
-    ( "inputFile,f", po::value<std::string>(&_inputFile),  "Specify the input TFile (REQUIRED)" )
-    ( "dataName,d",  po::value<std::string>(&_dataName),   "Name of the dataset" )
-    ( "wsName,w",    po::value<std::string>(&_wsName),     "Name of the workspace" )
-    ( "mcName,m",    po::value<std::string>(&_mcName),     "Name of the model config" )
-    ( "help,h",  "Print help message")
+    ( "inputFile,f",   po::value<std::string>(&_inputFile),  "Specify the input TFile (REQUIRED)" )
+    ( "outputFile,o",  po::value<std::string>(&_outputFile), "Specify the input TFile (REQUIRED)" )
+    ( "dataName,d",    po::value<std::string>(&_dataName)->default_value(_dataName),   
+                         "Name of the dataset" )
+    ( "wsName,w",      po::value<std::string>(&_wsName)->default_value(_wsName),
+                         "Name of the workspace" )
+    ( "mcName,m",      po::value<std::string>(&_mcName)->default_value(_mcName), 
+                         "Name of the model config" )
     // Model Options
-    ( "poi,p",       po::value<std::string>(&_poiStr),     "Specify POIs to be used in fit" )
-    ( "fixNP,n",     po::value<std::string>(&_fixNPStr),   "Specify NPs to be used in fit" )
+    ( "poi,p",         po::value<std::string>(&_poiStr),     "Specify POIs to be used in fit" )
+    ( "fixNP,n",       po::value<std::string>(&_fixNPStr),   "Specify NPs to be used in fit" )
     // Fit Options
-    ( "simplex",       po::value<bool>(&_useSIMPLEX),      "Estimate central values with SIMPLEX" )
-    ( "hesse",         po::value<bool>(&_useHESSE),        "Estimate errors with HESSE after fit" )
-    ( "minos",         po::value<bool>(&_useMINOS),        "Get asymmetric errors with MINOS fit" )
-    ( "nllOffset",     po::value<bool>(&_nllOffset),       "Set NLL offset" )
-    ( "minStrat",      po::value<int>(&_minStrategy),      "Set minimizer strategy" )
-    ( "optConst",      po::value<int>(&_optConst),         "Set optimize constant" )
-    ( "printLevel",    po::value<int>(&_optConst),         "Set minimizer print level" )
-    ( "minTolerance",  po::value<float>(&_minTolerance),   "Set minimizer tolerance" )
+    ( "simplex",       po::value<bool>(&_useSIMPLEX)->default_value(_useSIMPLEX),
+                         "Estimate central values with SIMPLEX" )
+    ( "hesse",         po::value<bool>(&_useHESSE)->default_value(_useHESSE),
+                         "Estimate errors with HESSE after fit" )
+    ( "minos",         po::value<bool>(&_useMINOS)->default_value(_useMINOS),
+                         "Get asymmetric errors with MINOS fit" )
+    ( "nllOffset",     po::value<bool>(&_nllOffset)->default_value(_nllOffset),         
+                         "Set NLL offset" )
+    ( "minStrat",      po::value<int>(&_minStrategy)->default_value(_minStrategy),
+                         "Set minimizer strategy" )
+    ( "optConst",      po::value<int>(&_optConst)->default_value(_optConst),
+                         "Set optimize constant" )
+    ( "printLevel",    po::value<int>(&_printLevel)->default_value(_printLevel),
+                         "Set minimizer print level" )
+    ( "minTolerance",  po::value<float>(&_minTolerance)->default_value(_minTolerance),
+                         "Set minimizer tolerance" )
     // Other
+    ( "help,h",  "Print help message")
     ;
 
   po::variables_map vm;
@@ -89,6 +102,7 @@ int main( int argc, char** argv )
   
   // Set fit options
   fitTool *fitter = new fitTool();
+  fitter->setMinAlgo( (TString) _minAlgo );
   fitter->useHESSE( _useHESSE );
   fitter->useMINOS( _useMINOS );
   fitter->useSIMPLEX( _useSIMPLEX );
@@ -97,6 +111,7 @@ int main( int argc, char** argv )
   fitter->setStrategy( _minStrategy );
   fitter->setOptConst( _optConst );
   fitter->setPrintLevel( _printLevel );
+  fitter->setOutputFile( (TString) _outputFile );
 
   // Get workspace, model, and data from file
   TFile *tf = new TFile( (TString) _inputFile );
