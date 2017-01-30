@@ -10,6 +10,7 @@ fitTool::fitTool() {
   _printLevel = 2;
   _useHESSE = true;
   _useMINOS = true;
+  _useSIMPLEX = false;
 }
 
 
@@ -128,17 +129,24 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
   minim.setEps( _minTolerance / 0.001 );
   minim.optimizeConst( _optConst );
 
-  //int status = minim.simplex();
-  int status = minim.minimize( _minAlgo );
+  int status = 0;
+  
+  if ( _useSIMPLEX ) {
+    cout << endl << "Starting fit with SIMPLEX..." << endl;
+    status += minim.simplex();
+  }
+
+  // Perform fit with MIGRAD
+  status += minim.minimize( _minAlgo );
 
   if ( _useHESSE ) {
     cout << endl << "Starting fit with HESSE..." << endl;
-    status &= minim.hesse();
+    status += minim.hesse();
   }
 
   if ( _useMINOS ) {
     cout << endl << "Starting fit with MINOS..." << endl;
-    status &= minim.minos( *mc->GetParametersOfInterest() );
+    status += minim.minos( *mc->GetParametersOfInterest() );
   }
 
   return status;

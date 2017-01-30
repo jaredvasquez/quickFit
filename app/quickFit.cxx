@@ -17,27 +17,40 @@ std::string _mcName = "ModelConfig";
 std::string _poiStr = "";
 std::string _fixNPStr = "";
 
-int procedure_ = 0;
-bool useHesse_ = false;
-float minTolerance_ = 0.001;
-
+bool _useHESSE = false;
+bool _useMINOS = false;
+bool _useSIMPLEX = false;
+bool _nllOffset = true;
+float _minTolerance = 0.001;
+int _minStrategy = 1;
+int _optConst = 0;
+int _printLevel = 2;
+  
 
 int main( int argc, char** argv )
 {
   namespace po = boost::program_options;
-  po::options_description desc( "Main options" );
+  po::options_description desc( "quickFit options" );
   desc.add_options()
     // Input Options 
     ( "inputFile,f", po::value<std::string>(&_inputFile),  "Specify the input TFile (REQUIRED)" )
     ( "dataName,d",  po::value<std::string>(&_dataName),   "Name of the dataset" )
     ( "wsName,w",    po::value<std::string>(&_wsName),     "Name of the workspace" )
     ( "mcName,m",    po::value<std::string>(&_mcName),     "Name of the model config" )
+    ( "help,h",  "Print help message")
     // Model Options
     ( "poi,p",       po::value<std::string>(&_poiStr),     "Specify POIs to be used in fit" )
     ( "fixNP,n",     po::value<std::string>(&_fixNPStr),   "Specify NPs to be used in fit" )
     // Fit Options
+    ( "simplex",       po::value<bool>(&_useSIMPLEX),      "Estimate central values with SIMPLEX" )
+    ( "hesse",         po::value<bool>(&_useHESSE),        "Estimate errors with HESSE after fit" )
+    ( "minos",         po::value<bool>(&_useMINOS),        "Get asymmetric errors with MINOS fit" )
+    ( "nllOffset",     po::value<bool>(&_nllOffset),       "Set NLL offset" )
+    ( "minStrat",      po::value<int>(&_minStrategy),      "Set minimizer strategy" )
+    ( "optConst",      po::value<int>(&_optConst),         "Set optimize constant" )
+    ( "printLevel",    po::value<int>(&_optConst),         "Set minimizer print level" )
+    ( "minTolerance",  po::value<float>(&_minTolerance),   "Set minimizer tolerance" )
     // Other
-    ( "help,h",  "Print help message")
     ;
 
   po::variables_map vm;
@@ -74,7 +87,16 @@ int main( int argc, char** argv )
   RooMsgService::instance().getStream(1).removeTopic(RooFit::Eval) ;
   RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
   
+  // Set fit options
   fitTool *fitter = new fitTool();
+  fitter->useHESSE( _useHESSE );
+  fitter->useMINOS( _useMINOS );
+  fitter->useSIMPLEX( _useSIMPLEX );
+  fitter->setNLLOffset( _nllOffset );
+  fitter->setTolerance( _minTolerance );
+  fitter->setStrategy( _minStrategy );
+  fitter->setOptConst( _optConst );
+  fitter->setPrintLevel( _printLevel );
 
   // Get workspace, model, and data from file
   TFile *tf = new TFile( (TString) _inputFile );
@@ -122,10 +144,12 @@ int main( int argc, char** argv )
         } else {
           ws->var(poiName)->setVal( std::stof(poiVals[0]) );
         }
+        cout << "   ";
         ws->var(poiName)->Print();
       } else {
         cout << "Releasing POI " << poiName << " in the fit." << endl;
         ws->var(poiName)->setConstant( kFALSE );
+        cout << "   ";
         ws->var(poiName)->Print();
       }
     }
@@ -133,6 +157,7 @@ int main( int argc, char** argv )
     RooRealVar *firstPOI = (RooRealVar*)mc->GetParametersOfInterest()->first();
     cout << endl << "No POIs specified. Will only float the first POI " << firstPOI->GetName() << endl;
     firstPOI->setConstant(kFALSE);
+    cout << "   ";
     firstPOI->Print();
   }
 
@@ -143,7 +168,7 @@ int main( int argc, char** argv )
   timer.Stop();
   double t_cpu_ = timer.CpuTime()/60.;
   double t_real_ = timer.RealTime()/60.;
-  printf("All fits done in %.2f min (cpu), %.2f min (real)\n", t_cpu_, t_real_);
+  printf("\nAll fits done in %.2f min (cpu), %.2f min (real)\n", t_cpu_, t_real_);
 
   // Print summary 
   cout << endl << "  Fit Summary of POIs: " << endl;
@@ -154,9 +179,10 @@ int main( int argc, char** argv )
   }
 
   if (status) {
-    cout << "*****************************************" << endl;
-    cout << "  WARNING: Fit status failed.            " << endl;
-    cout << "*****************************************" << endl;
+    cout << endl;
+    cout << "   *****************************************" << endl;
+    cout << "          WARNING: Fit status failed.       " << endl;
+    cout << "   *****************************************" << endl;
   }
 
   cout << endl;
