@@ -170,7 +170,7 @@ shlib: $(SHLIBFILE)
 clean:
 	rm -f $(DICTFILE) $(DICTHEAD)
 	rm -f $(OBJDIR)/*.o
-	rm -r $(OBJDIR)/dep/*.d
+	rm -f $(OBJDIR)/dep/*.d
 	rm -f $(SHLIBFILE)
 	rm -f $(_LIB_PATH)/lib$(LIBRARY).so
 
