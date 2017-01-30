@@ -8,7 +8,9 @@ using namespace RooStats;
 
 namespace auxUtils {
 
-  void Tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters) {
+  std::vector<std::string> Tokenize(const std::string& str, const std::string& delimiters) {
+    std::vector<std::string> tokens;
+
     // Skip delimiters at beginning.
     std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
     // Find first "non-delimiter".
@@ -22,6 +24,7 @@ namespace auxUtils {
       // Find next "non-delimiter"
       pos = str.find_first_of(delimiters, lastPos);
     }
+    return tokens;
   }
 
 }

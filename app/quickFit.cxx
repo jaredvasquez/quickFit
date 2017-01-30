@@ -35,6 +35,8 @@ int main( int argc, char** argv )
     // Model Options
     ( "poi,p",       po::value<std::string>(&_poiStr),     "Specify POIs to be used in fit" )
     ( "fixNP,n",     po::value<std::string>(&_fixNPStr),   "Specify NPs to be used in fit" )
+    // Fit Options
+    // Other
     ( "help,h",  "Print help message")
     ;
 
@@ -91,27 +93,48 @@ int main( int argc, char** argv )
   cout << "Sanity checks on the model: " << (validModel ? "OK" : "FAIL") << endl;
 
   // Fix nuisance narameters
-  std::vector<std::string> fixNPStrs;
-  auxUtils::Tokenize( _fixNPStr, fixNPStrs, "," );
-  for( unsigned int inp(0); inp < fixNPStrs.size(); inp++ ) {
-    cout << "*** Fixing nuisance parameter " << fixNPStrs[inp] << endl;
-    RooAbsCollection *fixNPs = mc->GetNuisanceParameters()->selectByName( (TString) fixNPStrs[inp]);
-    for (RooLinkedListIter it = fixNPs->iterator(); RooRealVar* NP = dynamic_cast<RooRealVar*>(it.Next());) {
-      cout << "\tSetting nuisance parameter " << NP->GetName() << " constant." << endl;
-      NP->setConstant( kTRUE );
+  if ( vm.count("fixNP") ) {
+    cout << endl << "Fixing nuisance parameters : " << endl;
+    std::vector<std::string> fixNPStrs = auxUtils::Tokenize( _fixNPStr, "," );
+    for( unsigned int inp(0); inp < fixNPStrs.size(); inp++ ) {
+      RooAbsCollection *fixNPs = mc->GetNuisanceParameters()->selectByName( (TString) fixNPStrs[inp]);
+      for (RooLinkedListIter it = fixNPs->iterator(); RooRealVar* NP = dynamic_cast<RooRealVar*>(it.Next());) {
+        cout << "   Fixing nuisance parameter " << NP->GetName() << endl;
+        NP->setConstant( kTRUE );
+      }
     }
   }
 
   // Prepare parameters of interest
-  std::vector<std::string> poiStrs;
-  auxUtils::Tokenize( _poiStr, poiStrs, "," );
-  for( unsigned int ipoi(0); ipoi < poiStrs.size(); ipoi++ ) {
-    cout << "*** POI *** : " << poiStrs[ipoi] << endl;
+  if ( vm.count("poi") ) {
+    cout << endl << "Preparing parameters of interest :" << endl;
+    std::vector<std::string> poiStrs = auxUtils::Tokenize( _poiStr, "," );
+    for( unsigned int ipoi(0); ipoi < poiStrs.size(); ipoi++ ) {
+      std::vector<std::string> poiTerms = auxUtils::Tokenize( poiStrs[ipoi], "=" );
+      TString poiName = (TString) poiTerms[0];
+      // should add check that POI is part of model config
+      if (poiTerms.size() > 1) {
+        std::vector<std::string> poiVals = auxUtils::Tokenize( poiTerms[1], "_" );
+        if (poiVals.size() == 3) {
+          ws->var(poiName)->setConstant( kFALSE );
+          ws->var(poiName)->setVal( std::stof(poiVals[0]) );
+          ws->var(poiName)->setRange( std::stof(poiVals[1]), std::stof(poiVals[2]) );
+        } else {
+          ws->var(poiName)->setVal( std::stof(poiVals[0]) );
+        }
+        ws->var(poiName)->Print();
+      } else {
+        cout << "Releasing POI " << poiName << " in the fit." << endl;
+        ws->var(poiName)->setConstant( kFALSE );
+        ws->var(poiName)->Print();
+      }
+    }
+  } else {
+    RooRealVar *firstPOI = (RooRealVar*)mc->GetParametersOfInterest()->first();
+    cout << endl << "No POIs specified. Will only float the first POI " << firstPOI->GetName() << endl;
+    firstPOI->setConstant(kFALSE);
+    firstPOI->Print();
   }
-  cout << endl << "Freeing POI mu:" << endl;
-  ws->var("mu")->setConstant(kFALSE);
-  ws->var("mu")->setRange(0,2);
-  ws->var("mu")->Print();
 
   // Fitting 
   TStopwatch timer;
