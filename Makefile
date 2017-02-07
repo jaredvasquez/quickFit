@@ -41,7 +41,7 @@ MOREROOTLIBS = -lRooFit -lRooFitCore -lRooStats -lHistFactory -lMinuit -lMathMor
 coredefault: default $(_BIN_PATH)/$(APP)
 
 # Include the library compilation rules
-include $(_DIR)/Makefile.common
+include $(_DIRFIT)/Makefile.common
 
 #
 # Rules for compiling the executable

@@ -13,7 +13,9 @@ fitTool::fitTool() {
   _useSIMPLEX = false;
 }
 
-
+using namespace std;
+using namespace RooFit;
+using namespace RooStats;
 
 bool fitTool::checkModel(const RooStats::ModelConfig &model, bool throwOnFail) {
 // ----------------------------------------------------------------------------------------------------- 
@@ -95,7 +97,7 @@ bool fitTool::checkModel(const RooStats::ModelConfig &model, bool throwOnFail) {
     if (a->isConstant() || allowedToFloat.contains(*a)) continue;
     if (a->getAttribute("flatParam")) continue;
     errors << "WARNING: pdf parameter " << a->GetName() << " (type " << a->ClassName() << ")"
-            << " is not allowed to float (it's not nuisance, poi, observable or global observable\n";
+            << " is not allowed to float (it's not nuisance, poi, observable or global observable)\n";
   }
   iter.reset();
   std::cout << errors.str() << std::endl;
@@ -118,16 +120,16 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
       v->setAttribute("BinnedLikelihood", true);
     }
   }
-
-  unique_ptr<RooAbsReal> nll( pdf->createNLL( *data, Offset(_nllOffset), 
-          Constrain(*mc->GetNuisanceParameters()), GlobalObservables(*mc->GetGlobalObservables()) ));
-  //nll->enableOffsetting( _nllOffset );
+  
+  RooAbsReal *nll = pdf->createNLL( *data, Constrain(*mc->GetNuisanceParameters()), GlobalObservables(*mc->GetGlobalObservables()) );
+  nll->enableOffsetting(1);
 
   RooMinimizer minim(*nll);
   minim.setStrategy( _minStrat );
   minim.setPrintLevel( _printLevel-1 );
   minim.setProfile(); /* print out time */
   minim.setEps( _minTolerance / 0.001 );
+  minim.setOffsetting( _nllOffset );
   if (_optConst > 0) minim.optimizeConst( _optConst );
 
   int status = 0;
@@ -160,6 +162,8 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
     
     // Get important values to save
     double nllVal = nll->getVal();
+    //double nllVal = result->minNll();
+    cout << endl << "NLL = " << nllVal << endl;
     std::map<std::string, double> muMap;
     for (RooLinkedListIter it = mc->GetParametersOfInterest()->iterator(); RooRealVar* POI = dynamic_cast<RooRealVar*>(it.Next());) {
       muMap[POI->GetName()] = POI->getVal();
