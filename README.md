@@ -13,6 +13,11 @@ Simple fit with MIGRAD
 quickFit -f filename.root -d dataset -p mu_ggH=1_-5_5,mu_VBF=1_-5_5
 ```
 
+Fitting `mu_ggH` but fixing `mu_VBF=2`
+```
+quickFit -f filename.root -d dataset -p mu_ggH=1_-5_5,mu_VBF=2
+```
+
 Fixing all systematics with `ATLAS_*` prefix
 ```
 quickFit -f filename.root -d dataset -p mu_ggH=1_-5_5,mu_VBF=1_-5_5 -n ATLAS_*
