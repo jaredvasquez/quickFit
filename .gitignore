@@ -5,4 +5,5 @@ obj
 *.pcm
 src/*_Dict.cxx
 workspaces
+scripts
 profileNLLScans
