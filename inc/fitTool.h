@@ -14,7 +14,7 @@ class fitTool : public TObject{
   private:
     TString _minAlgo, _outputFile;
     float _minTolerance;
-    bool _nllOffset, _useHESSE, _useMINOS, _useSIMPLEX;
+    bool _nllOffset, _useHESSE, _useMINOS, _useSIMPLEX, _saveWS;
     int _minStrat, _optConst, _printLevel; 
 
   public:
@@ -23,6 +23,7 @@ class fitTool : public TObject{
     void useMINOS( bool flag ) { _useMINOS = flag; };
     void useSIMPLEX( bool flag ) { _useSIMPLEX = flag; };
     void setNLLOffset( bool flag ) { _nllOffset = flag; };
+    void saveWorkspace( bool flag ) { _saveWS = flag; };
     void setTolerance( float val ) { _minTolerance = val; };
     void setStrategy( int val ) { _minStrat = val; };
     void setOptConst( int val ) { _optConst = val; };

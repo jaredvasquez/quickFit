@@ -11,6 +11,7 @@ fitTool::fitTool() {
   _useHESSE = true;
   _useMINOS = true;
   _useSIMPLEX = false;
+  _saveWS= false;
 }
 
 using namespace std;
@@ -162,8 +163,6 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
     
     // Get important values to save
     double nllVal = nll->getVal();
-    //double nllVal = result->minNll();
-    cout << endl << "NLL = " << nllVal << endl;
     std::map<std::string, double> muMap;
     for (RooLinkedListIter it = mc->GetParametersOfInterest()->iterator(); RooRealVar* POI = dynamic_cast<RooRealVar*>(it.Next());) {
       muMap[POI->GetName()] = POI->getVal();
@@ -176,8 +175,10 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
     for (RooLinkedListIter it = mc->GetParametersOfInterest()->iterator(); RooRealVar* POI = dynamic_cast<RooRealVar*>(it.Next());) {
       nllTree->Branch( POI->GetName(), &(muMap[POI->GetName()]) );
     }
+
     nllTree->Fill();
     nllTree->Write();
+    if (_saveWS) w->Write();
   }
 
   return status;

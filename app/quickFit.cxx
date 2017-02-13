@@ -18,6 +18,7 @@ std::string _mcName = "ModelConfig";
 std::string _poiStr = "";
 std::string _fixNPStr = "";
 
+bool _saveWS = false;
 bool _useHESSE = false;
 bool _useMINOS = false;
 bool _useSIMPLEX = false;
@@ -38,7 +39,7 @@ int main( int argc, char** argv )
   desc.add_options()
     // IO Options 
     ( "inputFile,f",   po::value<std::string>(&_inputFile),  "Specify the input TFile (REQUIRED)" )
-    ( "outputFile,o",  po::value<std::string>(&_outputFile), "Specify the input TFile (REQUIRED)" )
+    ( "outputFile,o",  po::value<std::string>(&_outputFile), "Save fit results to output TFile" )
     ( "dataName,d",    po::value<std::string>(&_dataName)->default_value(_dataName),   
                          "Name of the dataset" )
     ( "wsName,w",      po::value<std::string>(&_wsName)->default_value(_wsName),
@@ -65,6 +66,8 @@ int main( int argc, char** argv )
                          "Set minimizer print level" )
     ( "minTolerance",  po::value<float>(&_minTolerance)->default_value(_minTolerance),
                          "Set minimizer tolerance" )
+    ( "saveWS",        po::value<bool>(&_saveWS)->default_value(_saveWS),
+                         "Save postfit workspace to the output file" )
     // Other
     ( "help,h",  "Print help message")
     ;
@@ -115,6 +118,7 @@ int main( int argc, char** argv )
   fitter->setOptConst( _optConst );
   fitter->setPrintLevel( _printLevel );
   fitter->setOutputFile( (TString) _outputFile );
+  fitter->saveWorkspace( _saveWS );
 
   // Get workspace, model, and data from file
   TFile *tf = new TFile( (TString) _inputFile );
@@ -174,7 +178,6 @@ int main( int argc, char** argv )
         cout << "   ";
         ws->var(poiName)->Print();
       } else {
-        cout << "Releasing POI " << poiName << " in the fit." << endl;
         ws->var(poiName)->setConstant( kFALSE );
         cout << "   ";
         ws->var(poiName)->Print();
@@ -186,6 +189,7 @@ int main( int argc, char** argv )
     firstPOI->setConstant(kFALSE);
     cout << "   ";
     firstPOI->Print();
+    fitPOIs.add( *firstPOI );
   }
 
   // Fitting 
