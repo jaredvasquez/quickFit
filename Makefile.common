@@ -116,7 +116,7 @@ print:
 $(DICTFILE): $(HLIST) $(DICTLDEF)
 	@echo "Generating dictionary $@" 
 	@$(shell root-config --exec-prefix)/bin/rootcint -f $(DICTFILE) -c -p $(INCLUDES) $^
-	@mv src/$(LIBRARY)_Dict_rdict.pcm $(LIBRARY)_Dict_rdict.pcm
+	@mv src/$(LIBRARY)_Dict_rdict.pcm lib/$(LIBRARY)_Dict_rdict.pcm
 
 # Rule to comile the dictionary
 $(DICTOBJ): $(DICTFILE)
