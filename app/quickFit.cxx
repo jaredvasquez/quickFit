@@ -26,14 +26,17 @@ float _minTolerance = 0.001;
 int _minStrategy = 1;
 int _optConst = 0;
 int _printLevel = 2;
-  
+
+string OKGREEN = "\033[92m";
+string FAIL = "\033[91m";
+string ENDC = "\033[0m";
 
 int main( int argc, char** argv )
 {
   namespace po = boost::program_options;
   po::options_description desc( "quickFit options" );
   desc.add_options()
-    // Input Options 
+    // IO Options 
     ( "inputFile,f",   po::value<std::string>(&_inputFile),  "Specify the input TFile (REQUIRED)" )
     ( "outputFile,o",  po::value<std::string>(&_outputFile), "Specify the input TFile (REQUIRED)" )
     ( "dataName,d",    po::value<std::string>(&_dataName)->default_value(_dataName),   
@@ -143,13 +146,22 @@ int main( int argc, char** argv )
   }
 
   // Prepare parameters of interest
+  RooArgSet fitPOIs;
   if ( vm.count("poi") ) {
     cout << endl << "Preparing parameters of interest :" << endl;
     std::vector<std::string> poiStrs = auxUtils::Tokenize( _poiStr, "," );
     for( unsigned int ipoi(0); ipoi < poiStrs.size(); ipoi++ ) {
       std::vector<std::string> poiTerms = auxUtils::Tokenize( poiStrs[ipoi], "=" );
       TString poiName = (TString) poiTerms[0];
-      // should add check that POI is part of model config
+
+      // check if variable is in workspace
+      if (not ws->var(poiName))  {
+        cout << "Variable " << poiName << " not in workspace. Skipping." << endl;
+        continue;
+      }
+
+      // set variable for fit
+      fitPOIs.add( *(ws->var(poiName)) );
       if (poiTerms.size() > 1) {
         std::vector<std::string> poiVals = auxUtils::Tokenize( poiTerms[1], "_" );
         if (poiVals.size() == 3) {
@@ -185,19 +197,21 @@ int main( int argc, char** argv )
   double t_real_ = timer.RealTime()/60.;
   printf("\nAll fits done in %.2f min (cpu), %.2f min (real)\n", t_cpu_, t_real_);
 
+  string STATMSG = (status) ? "\033[91m STATUS FAILED \033[0m" : "\033[92m STATUS OK \033[0m" ;
+
   // Print summary 
-  cout << endl << "  Fit Summary of POIs: " << endl;
+  cout << endl << "  Fit Summary of POIs (" << STATMSG << ")" << endl;
   cout << "------------------------------------------------" << endl;
-  for (RooLinkedListIter it = mc->GetParametersOfInterest()->iterator(); RooRealVar* POI = dynamic_cast<RooRealVar*>(it.Next());) {
+  for (RooLinkedListIter it = fitPOIs.iterator(); RooRealVar* POI = dynamic_cast<RooRealVar*>(it.Next());) {
     if (POI->isConstant()) continue;
     POI->Print();
   }
 
   if (status) {
-    cout << endl;
+    cout << FAIL << endl;
     cout << "   *****************************************" << endl;
     cout << "          WARNING: Fit status failed.       " << endl;
-    cout << "   *****************************************" << endl;
+    cout << "   *****************************************" << ENDC << endl;
   }
 
   cout << endl;
