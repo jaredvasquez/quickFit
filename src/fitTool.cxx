@@ -25,7 +25,7 @@ bool fitTool::checkModel(const RooStats::ModelConfig &model, bool throwOnFail) {
   std::auto_ptr<TIterator> iter;
   RooAbsPdf *pdf = model.GetPdf(); 
   if (pdf == 0) throw std::invalid_argument("Model without Pdf");
-  
+   
   RooArgSet allowedToFloat;
   
   // Check model observables
@@ -178,7 +178,12 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
 
     nllTree->Fill();
     nllTree->Write();
-    if (_saveWS) w->Write();
+    if (_saveWS) {
+      RooArgSet everything;
+      utils::collectEverything(mc, &everything);
+      w->saveSnapshot("postfit", everything);
+      w->Write();
+    }
   }
 
   return status;
