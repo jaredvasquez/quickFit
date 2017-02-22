@@ -160,7 +160,7 @@ int main( int argc, char** argv )
 
       // check if variable is in workspace
       if (not ws->var(poiName))  {
-        cout << "Variable " << poiName << " not in workspace. Skipping." << endl;
+        cout << FAIL << "Variable " << poiName << " not in workspace. Skipping." << ENDC << endl;
         continue;
       }
 
