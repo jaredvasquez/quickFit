@@ -25,7 +25,7 @@ bool _useSIMPLEX = false;
 bool _nllOffset = true;
 float _minTolerance = 0.001;
 int _minStrategy = 1;
-int _optConst = 0;
+int _optConst = 2;
 int _printLevel = 2;
 
 string OKGREEN = "\033[92m";

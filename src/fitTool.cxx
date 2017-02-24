@@ -125,6 +125,8 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
   RooAbsReal *nll = pdf->createNLL( *data, Constrain(*mc->GetNuisanceParameters()), GlobalObservables(*mc->GetGlobalObservables()) );
   nll->enableOffsetting(1);
 
+  //ROOT::Math::MinimizerOptions::SetDefaultTolerance( _minTolerance / 0.001 );
+
   RooMinimizer minim(*nll);
   minim.setStrategy( _minStrat );
   minim.setPrintLevel( _printLevel-1 );
