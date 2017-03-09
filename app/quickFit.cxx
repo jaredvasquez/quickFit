@@ -27,6 +27,7 @@ float _minTolerance = 0.001;
 int _minStrategy = 1;
 int _optConst = 2;
 int _printLevel = 2;
+int _nCPU = 1;
 
 string OKGREEN = "\033[92m";
 string FAIL = "\033[91m";
@@ -58,6 +59,8 @@ int main( int argc, char** argv )
                          "Get asymmetric errors with MINOS fit" )
     ( "nllOffset",     po::value<bool>(&_nllOffset)->default_value(_nllOffset),         
                          "Set NLL offset" )
+    ( "numCPU",      po::value<int>(&_nCPU)->default_value(_nCPU),
+                         "Set number of CPUs for fit" )
     ( "minStrat",      po::value<int>(&_minStrategy)->default_value(_minStrategy),
                          "Set minimizer strategy" )
     ( "optConst",      po::value<int>(&_optConst)->default_value(_optConst),
@@ -117,6 +120,7 @@ int main( int argc, char** argv )
   fitter->setStrategy( _minStrategy );
   fitter->setOptConst( _optConst );
   fitter->setPrintLevel( _printLevel );
+  fitter->setNCPU( _nCPU );
   fitter->setOutputFile( (TString) _outputFile );
   fitter->saveWorkspace( _saveWS );
 

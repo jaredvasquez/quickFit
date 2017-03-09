@@ -6,7 +6,8 @@ fitTool::fitTool() {
   _minTolerance = 1E-03;
   _minStrat = 1;
   _nllOffset = true;
-  _optConst = 0;
+  _nCPU = 1;
+  _optConst = 2;
   _printLevel = 2;
   _useHESSE = true;
   _useMINOS = true;
@@ -112,6 +113,7 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
 // ----------------------------------------------------------------------------------------------------- 
   RooAbsPdf *pdf=mc->GetPdf();
   RooWorkspace *w=mc->GetWS();
+
   RooArgSet funcs = w->allPdfs();
   std::auto_ptr<TIterator> iter(funcs.createIterator());
   for ( RooAbsPdf* v = (RooAbsPdf*)iter->Next(); v!=0; v = (RooAbsPdf*)iter->Next() ) {
@@ -122,11 +124,19 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
     }
   }
   
-  RooAbsReal *nll = pdf->createNLL( *data, Constrain(*mc->GetNuisanceParameters()), GlobalObservables(*mc->GetGlobalObservables()) );
+  TStopwatch timer1;
+  std::cout << "   Building NLL..." << std::endl;
+  //RooAbsReal *nll = pdf->createNLL(*data, NumCPU(_nCPU,3), 
+  RooAbsReal *nll = pdf->createNLL(*data, NumCPU(_nCPU), 
+      Constrain(*mc->GetNuisanceParameters()), GlobalObservables(*mc->GetGlobalObservables()));
   nll->enableOffsetting(1);
+  timer1.Stop();
+  double t_cpu_ = timer1.CpuTime()/60.;
+  double t_real_ = timer1.RealTime()/60.;
+  printf("   NLL built in %.2f min (cpu), %.2f min (real)\n", t_cpu_, t_real_);
 
   //ROOT::Math::MinimizerOptions::SetDefaultTolerance( _minTolerance / 0.001 );
-
+  
   RooMinimizer minim(*nll);
   minim.setStrategy( _minStrat );
   minim.setPrintLevel( _printLevel-1 );
