@@ -196,6 +196,8 @@ int main( int argc, char** argv )
     fitPOIs.add( *firstPOI );
   }
 
+  mc->SetParametersOfInterest( fitPOIs );
+
   // Fitting 
   TStopwatch timer;
   cout << endl << "Starting fit..." << endl;
