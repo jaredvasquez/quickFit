@@ -158,6 +158,7 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
   if ( _useHESSE ) {
     cout << endl << "Starting fit with HESSE..." << endl;
     status += minim.hesse();
+    minim.save("hesse","")->Print();
   }
 
   if ( _useMINOS ) {
