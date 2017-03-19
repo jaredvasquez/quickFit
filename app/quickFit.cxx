@@ -187,6 +187,7 @@ int main( int argc, char** argv )
         ws->var(poiName)->Print();
       }
     }
+
   } else {
     RooRealVar *firstPOI = (RooRealVar*)mc->GetParametersOfInterest()->first();
     cout << endl << "No POIs specified. Will only float the first POI " << firstPOI->GetName() << endl;
