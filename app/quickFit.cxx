@@ -183,6 +183,7 @@ int main( int argc, char** argv )
           ws->var(poiName)->setRange( std::stof(poiVals[1]), std::stof(poiVals[2]) );
         } else {
           ws->var(poiName)->setVal( std::stof(poiVals[0]) );
+          ws->var(poiName)->setConstant( kTRUE );
         }
         cout << "   ";
         ws->var(poiName)->Print();
