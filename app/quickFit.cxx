@@ -19,6 +19,7 @@ std::string _poiStr = "";
 std::string _fixNPStr = "";
 
 bool _saveWS = false;
+bool _checkWS = false;
 bool _useHESSE = false;
 bool _useMINOS = false;
 bool _useSIMPLEX = false;
@@ -73,6 +74,8 @@ int main( int argc, char** argv )
                          "Save postfit workspace to the output file" )
     // Other
     ( "help,h",  "Print help message")
+    ( "checkWS",       po::value<bool>(&_checkWS)->default_value(_checkWS),
+                         "Perform sanity checks on workspace before fit." )
     ;
 
   po::variables_map vm;
@@ -136,9 +139,11 @@ int main( int argc, char** argv )
   utils::setAllConstant( mc->GetParametersOfInterest(), true );
 
   // Sanity checks on model 
-  cout << "Performing sanity checks on model..." << endl;
-  bool validModel = fitter->checkModel( *mc, true );
-  cout << "Sanity checks on the model: " << (validModel ? "OK" : "FAIL") << endl;
+  if (_checkWS) {
+    cout << "Performing sanity checks on model..." << endl;
+    bool validModel = fitter->checkModel( *mc, true );
+    cout << "Sanity checks on the model: " << (validModel ? "OK" : "FAIL") << endl;
+  }
 
   // Fix nuisance narameters
   if ( vm.count("fixNP") ) {
