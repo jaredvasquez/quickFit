@@ -129,9 +129,28 @@ int main( int argc, char** argv )
 
   // Get workspace, model, and data from file
   TFile *tf = new TFile( (TString) _inputFile );
+  if (not tf->IsOpen()) {
+    std::cout << "Error: TFile \'" << _inputFile << "\' was not found." << endl;
+    return 0;
+  }
+
   RooWorkspace *ws = (RooWorkspace*)tf->Get( (TString) _wsName );
+  if (ws == nullptr) {
+    std::cout << "Error: Workspace \'" << _wsName << "\' does not exist in the TFile." << endl;
+    return 0;
+  }
+  
   RooStats::ModelConfig *mc = (RooStats::ModelConfig*)ws->obj( (TString) _mcName );
+  if (mc == nullptr) {
+    std::cout << "Error: ModelConfig \'" << _mcName << "\' does not exist in workspace." << endl;
+    return 0;
+  }
+  
   RooAbsData *data = ws->data( (TString) _dataName );
+  if (data == nullptr) {
+    std::cout << "Error: Dataset \'" << _dataName << "\' does not exist in workspace." << endl;
+    return 0;
+  }
 
   // Prepare model as expected
   utils::setAllConstant( mc->GetGlobalObservables(), true );
