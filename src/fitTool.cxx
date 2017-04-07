@@ -131,8 +131,8 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
   if (_fixStarCache) utils::fixRooStarCache( w );
   RooAbsReal *nll = pdf->createNLL(*data, NumCPU(_nCPU), 
       Constrain(*mc->GetNuisanceParameters()), GlobalObservables(*mc->GetGlobalObservables()));
-  nll->enableOffsetting(1);
   if (_fixStarCache) utils::fixRooStarCache( w ); // needs to be done twice.
+  nll->enableOffsetting(1);
 
   timer1.Stop();
   double t_cpu_ = timer1.CpuTime()/60.;
