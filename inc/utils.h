@@ -28,4 +28,15 @@ namespace utils {
     SafeDelete(iter);
   }
 
+  static void fixRooStarCache( RooWorkspace *ws ) {
+    RooFIter iter = ws->components().fwdIterator();  // ws is the pointer to workspace
+    RooAbsArg* arg;
+    while ((arg = iter.next())) {
+      if (arg->IsA() == RooStarMomentMorph::Class()) {
+        ((RooStarMomentMorph*)arg)->fixCache();
+      }
+    }
+    SafeDelete(arg);
+  }
+
 }

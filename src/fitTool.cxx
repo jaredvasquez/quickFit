@@ -12,6 +12,7 @@ fitTool::fitTool() {
   _useHESSE = true;
   _useMINOS = true;
   _useSIMPLEX = false;
+  _fixStarCache = false;
   _saveWS= false;
 }
 
@@ -127,9 +128,12 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
   TStopwatch timer1;
   std::cout << "   Building NLL..." << std::endl;
   //RooAbsReal *nll = pdf->createNLL(*data, NumCPU(_nCPU,3), 
+  if (_fixStarCache) utils::fixRooStarCache( w );
   RooAbsReal *nll = pdf->createNLL(*data, NumCPU(_nCPU), 
       Constrain(*mc->GetNuisanceParameters()), GlobalObservables(*mc->GetGlobalObservables()));
   nll->enableOffsetting(1);
+  if (_fixStarCache) utils::fixRooStarCache( w ); // needs to be done twice.
+
   timer1.Stop();
   double t_cpu_ = timer1.CpuTime()/60.;
   double t_real_ = timer1.RealTime()/60.;

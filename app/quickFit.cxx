@@ -24,6 +24,7 @@ bool _useHESSE = false;
 bool _useMINOS = false;
 bool _useSIMPLEX = false;
 bool _nllOffset = true;
+bool _fixStarCache = false;
 float _minTolerance = 0.001;
 int _minStrategy = 1;
 int _optConst = 2;
@@ -76,6 +77,8 @@ int main( int argc, char** argv )
     ( "help,h",  "Print help message")
     ( "checkWS",       po::value<bool>(&_checkWS)->default_value(_checkWS),
                          "Perform sanity checks on workspace before fit." )
+    ( "fixStarCache",  po::value<bool>(&_checkWS)->default_value(_checkWS),
+                         "Fix cache in RooStarMomentMorph." )
     ;
 
   po::variables_map vm;
@@ -126,6 +129,7 @@ int main( int argc, char** argv )
   fitter->setNCPU( _nCPU );
   fitter->setOutputFile( (TString) _outputFile );
   fitter->saveWorkspace( _saveWS );
+  fitter->setFixStarCache( _fixStarCache );
 
   // Get workspace, model, and data from file
   TFile *tf = new TFile( (TString) _inputFile );

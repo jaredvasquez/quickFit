@@ -46,4 +46,5 @@
 #include <RooWorkspace.h>
 #include <RooRealSumPdf.h>
 #include <RooNumIntConfig.h>
+#include <RooStarMomentMorph.h>
 #endif
