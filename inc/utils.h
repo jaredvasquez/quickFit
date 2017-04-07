@@ -29,7 +29,6 @@ namespace utils {
   }
 
   static void fixRooStarCache( RooWorkspace *ws ) {
-    cout << "Fixing cache in RooStarMomentMorph.." << endl;
     RooFIter iter = ws->components().fwdIterator();  
     RooAbsArg* arg;
     while ((arg = iter.next())) {
