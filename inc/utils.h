@@ -29,7 +29,8 @@ namespace utils {
   }
 
   static void fixRooStarCache( RooWorkspace *ws ) {
-    RooFIter iter = ws->components().fwdIterator();  // ws is the pointer to workspace
+    cout << "Fixing cache in RooStarMomentMorph.." << endl;
+    RooFIter iter = ws->components().fwdIterator();  
     RooAbsArg* arg;
     while ((arg = iter.next())) {
       if (arg->IsA() == RooStarMomentMorph::Class()) {

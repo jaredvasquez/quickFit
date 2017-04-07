@@ -42,7 +42,9 @@ int main( int argc, char** argv )
   desc.add_options()
     // IO Options 
     ( "inputFile,f",   po::value<std::string>(&_inputFile),  "Specify the input TFile (REQUIRED)" )
+
     ( "outputFile,o",  po::value<std::string>(&_outputFile), "Save fit results to output TFile" )
+
     ( "dataName,d",    po::value<std::string>(&_dataName)->default_value(_dataName),   
                          "Name of the dataset" )
     ( "wsName,w",      po::value<std::string>(&_wsName)->default_value(_wsName),
@@ -51,7 +53,9 @@ int main( int argc, char** argv )
                          "Name of the model config" )
     // Model Options
     ( "poi,p",         po::value<std::string>(&_poiStr),     "Specify POIs to be used in fit" )
+
     ( "fixNP,n",       po::value<std::string>(&_fixNPStr),   "Specify NPs to be used in fit" )
+
     // Fit Options
     ( "simplex",       po::value<bool>(&_useSIMPLEX)->default_value(_useSIMPLEX),
                          "Estimate central values with SIMPLEX" )
@@ -74,10 +78,11 @@ int main( int argc, char** argv )
     ( "saveWS",        po::value<bool>(&_saveWS)->default_value(_saveWS),
                          "Save postfit workspace to the output file" )
     // Other
-    ( "help,h",  "Print help message")
+    ( "help,h",          "Print help message")
+
     ( "checkWS",       po::value<bool>(&_checkWS)->default_value(_checkWS),
                          "Perform sanity checks on workspace before fit." )
-    ( "fixStarCache",  po::value<bool>(&_checkWS)->default_value(_checkWS),
+    ( "fixStarCache",  po::value<bool>(&_fixStarCache)->default_value(_fixStarCache),
                          "Fix cache in RooStarMomentMorph." )
     ;
 
