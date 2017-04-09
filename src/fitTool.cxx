@@ -198,7 +198,7 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
     if (_saveWS) {
       RooArgSet everything;
       utils::collectEverything(mc, &everything);
-      w->saveSnapshot("postfit", everything);
+      w->saveSnapshot("ucmles", everything);
       w->Write();
     }
   }
