@@ -14,6 +14,7 @@ std::string _minAlgo  = "Minuit2";
 std::string _dataName = "combData";
 std::string _wsName = "combWS";
 std::string _mcName = "ModelConfig";
+std::string _snapshot = "";
 
 std::string _poiStr = "";
 std::string _fixNPStr = "";
@@ -51,6 +52,8 @@ int main( int argc, char** argv )
                          "Name of the workspace" )
     ( "mcName,m",      po::value<std::string>(&_mcName)->default_value(_mcName), 
                          "Name of the model config" )
+    ( "snapshot,s",    po::value<std::string>(&_snapshot)->default_value(_snapshot), 
+                         "Load snapshot from workspace" )
     // Model Options
     ( "poi,p",         po::value<std::string>(&_poiStr),     "Specify POIs to be used in fit" )
 
@@ -159,6 +162,13 @@ int main( int argc, char** argv )
   if (data == nullptr) {
     std::cout << "Error: Dataset \'" << _dataName << "\' does not exist in workspace." << endl;
     return 0;
+  }
+
+  if (_snapshot != "") {
+    if (not ws->loadSnapshot( (TString) _snapshot )) {
+      std::cout << "Error: Unable to load snapshot " << _snapshot << " from workspace." << endl;
+      return 0;
+    }
   }
 
   // Prepare model as expected
