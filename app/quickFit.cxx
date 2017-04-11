@@ -220,6 +220,12 @@ int main( int argc, char** argv )
           ws->var(poiName)->setVal( std::stof(poiVals[0]) );
           ws->var(poiName)->setRange( std::stof(poiVals[1]), std::stof(poiVals[2]) );
         } else {
+          if ( std::stof(poiVals[0]) > ws->var(poiName)->getMax() ) {
+            ws->var(poiName)->setRange( ws->var(poiName)->getMin(), 2*std::stof(poiVals[0]) );
+          }
+          if ( std::stof(poiVals[0]) < ws->var(poiName)->getMin() ) {
+            ws->var(poiName)->setRange( -2*abs(std::stof(poiVals[0])), ws->var(poiName)->getMax() );
+          }
           ws->var(poiName)->setVal( std::stof(poiVals[0]) );
           ws->var(poiName)->setConstant( kTRUE );
         }
