@@ -216,9 +216,9 @@ int main( int argc, char** argv )
       if (poiTerms.size() > 1) {
         std::vector<std::string> poiVals = auxUtils::Tokenize( poiTerms[1], "_" );
         if (poiVals.size() == 3) {
-          ws->var(poiName)->setConstant( kFALSE );
-          ws->var(poiName)->setVal( std::stof(poiVals[0]) );
           ws->var(poiName)->setRange( std::stof(poiVals[1]), std::stof(poiVals[2]) );
+          ws->var(poiName)->setVal( std::stof(poiVals[0]) );
+          ws->var(poiName)->setConstant( kFALSE );
         } else {
           if ( std::stof(poiVals[0]) > ws->var(poiName)->getMax() ) {
             ws->var(poiName)->setRange( ws->var(poiName)->getMin(), 2*std::stof(poiVals[0]) );
