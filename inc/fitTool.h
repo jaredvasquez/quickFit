@@ -12,7 +12,7 @@ using namespace RooStats;
 
 class fitTool : public TObject{
   private:
-    TString _minAlgo, _outputFile;
+    TString _minAlgo, _outputFile, _ssName;
     float _minTolerance;
     bool _nllOffset, _useHESSE, _useMINOS, _useSIMPLEX, _saveWS, _fixStarCache;
     int _minStrat, _optConst, _printLevel, _nCPU; 
@@ -31,6 +31,7 @@ class fitTool : public TObject{
     void setOptConst( int val ) { _optConst = val; };
     void setPrintLevel( int val ) { _printLevel = val; };
     void setOutputFile( TString str ) { _outputFile = str; };
+    void setSnapshotName( TString str ) { _ssName = str; };
     void setMinAlgo( TString str ) { _minAlgo = str; };
     
     bool checkModel(const RooStats::ModelConfig &model, bool throwOnFail=false) ;

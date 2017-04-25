@@ -1,5 +1,5 @@
 #include "inc/CommonHead.h"
-#include "inc/RooFitHead.h"
+#include "inc/RooFitHead.h" 
 #include "inc/RooStatsHead.h"
 
 #include <boost/program_options.hpp>
@@ -8,6 +8,7 @@
 #include "inc/auxUtils.h"
 
 
+std::string _ssname = "ucmles";
 std::string _outputFile = "";
 std::string _inputFile = "";
 std::string _minAlgo  = "Minuit2";
@@ -54,6 +55,8 @@ int main( int argc, char** argv )
                          "Name of the model config" )
     ( "snapshot,s",    po::value<std::string>(&_snapshot)->default_value(_snapshot), 
                          "Load snapshot from workspace" )
+    ( "ssname,k",      po::value<std::string>(&_ssname)->default_value(_ssname), 
+                         "Name of snapshot to save to output workspace" )
     // Model Options
     ( "poi,p",         po::value<std::string>(&_poiStr),     "Specify POIs to be used in fit" )
 
@@ -73,8 +76,7 @@ int main( int argc, char** argv )
     ( "minStrat",      po::value<int>(&_minStrategy)->default_value(_minStrategy),
                          "Set minimizer strategy" )
     ( "optConst",      po::value<int>(&_optConst)->default_value(_optConst),
-                         "Set optimize constant" )
-    ( "printLevel",    po::value<int>(&_printLevel)->default_value(_printLevel),
+                         "Set optimize constant" ) ( "printLevel",    po::value<int>(&_printLevel)->default_value(_printLevel),
                          "Set minimizer print level" )
     ( "minTolerance",  po::value<float>(&_minTolerance)->default_value(_minTolerance),
                          "Set minimizer tolerance" )
@@ -136,6 +138,7 @@ int main( int argc, char** argv )
   fitter->setPrintLevel( _printLevel );
   fitter->setNCPU( _nCPU );
   fitter->setOutputFile( (TString) _outputFile );
+  fitter->setSnapshotName( (TString) _ssname );
   fitter->saveWorkspace( _saveWS );
   fitter->setFixStarCache( _fixStarCache );
 
