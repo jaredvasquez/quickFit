@@ -173,6 +173,11 @@ int main( int argc, char** argv )
       return 0;
     }
   }
+  
+  // save a snapshot of everything as is
+  RooArgSet everything;
+  utils::collectEverything(mc, &everything);
+  ws->saveSnapshot( "original", everything);
 
   // Prepare model as expected
   utils::setAllConstant( mc->GetGlobalObservables(), true );
