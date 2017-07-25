@@ -129,8 +129,10 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
   std::cout << "   Building NLL..." << std::endl;
   //RooAbsReal *nll = pdf->createNLL(*data, NumCPU(_nCPU,3), 
   if (_fixStarCache) utils::fixRooStarCache( w );
-  RooAbsReal *nll = pdf->createNLL(*data, NumCPU(_nCPU), 
-      Constrain(*mc->GetNuisanceParameters()), GlobalObservables(*mc->GetGlobalObservables()));
+  RooAbsReal *nll = pdf->createNLL(*data, NumCPU(_nCPU),
+				   Constrain(*mc->GetNuisanceParameters()),
+				   GlobalObservables(*mc->GetGlobalObservables()),
+				   ConditionalObservables(*mc->GetConditionalObservables()));
   if (_fixStarCache) utils::fixRooStarCache( w ); // needs to be done twice.
   nll->enableOffsetting(1);
 
