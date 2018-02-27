@@ -21,6 +21,7 @@ std::string _poiStr = "";
 std::string _fixNPStr = "";
 
 bool _saveWS = false;
+bool _saveErrors = false;
 bool _checkWS = false;
 bool _useHESSE = false;
 bool _useMINOS = false;
@@ -82,6 +83,8 @@ int main( int argc, char** argv )
                          "Set minimizer tolerance" )
     ( "saveWS",        po::value<bool>(&_saveWS)->default_value(_saveWS),
                          "Save postfit workspace to the output file" )
+    ( "saveErrors",    po::value<bool>(&_saveErrors)->default_value(_saveErrors),
+                         "Save errors in the TTree" )
     // Other
     ( "help,h",          "Print help message")
 
@@ -140,6 +143,7 @@ int main( int argc, char** argv )
   fitter->setOutputFile( (TString) _outputFile );
   fitter->setSnapshotName( (TString) _ssname );
   fitter->saveWorkspace( _saveWS );
+  fitter->saveErrors(_saveErrors);
   fitter->setFixStarCache( _fixStarCache );
 
   // Get workspace, model, and data from file
