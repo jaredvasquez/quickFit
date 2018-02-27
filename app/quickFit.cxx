@@ -143,7 +143,7 @@ int main( int argc, char** argv )
   fitter->setFixStarCache( _fixStarCache );
 
   // Get workspace, model, and data from file
-  TFile *tf = new TFile( (TString) _inputFile );
+  TFile *tf = TFile::Open( (TString) _inputFile );
   if (not tf->IsOpen()) {
     std::cout << "Error: TFile \'" << _inputFile << "\' was not found." << endl;
     return 0;
