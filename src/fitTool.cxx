@@ -14,6 +14,7 @@ fitTool::fitTool() {
   _useSIMPLEX = false;
   _fixStarCache = false;
   _saveWS= false;
+  _saveErrors = false;
 }
 
 using namespace std;
@@ -183,8 +184,14 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
     // Get important values to save
     double nllVal = nll->getVal();
     std::map<std::string, double> muMap;
+    std::map<std::string, double> muErrorUpMap;
+    std::map<std::string, double> muErrorDownMap;
     for (RooLinkedListIter it = mc->GetParametersOfInterest()->iterator(); RooRealVar* POI = dynamic_cast<RooRealVar*>(it.Next());) {
       muMap[POI->GetName()] = POI->getVal();
+      if (_saveErrors) {
+	  muErrorUpMap[POI->GetName()] = POI->getErrorHi();
+	  muErrorDownMap[POI->GetName()] = POI->getErrorLo();
+      }
     }
     
     // Save values to TTree
@@ -193,6 +200,10 @@ int fitTool::profileToData(ModelConfig *mc, RooAbsData *data){
     nllTree->Branch( "nll", &nllVal);
     for (RooLinkedListIter it = mc->GetParametersOfInterest()->iterator(); RooRealVar* POI = dynamic_cast<RooRealVar*>(it.Next());) {
       nllTree->Branch( POI->GetName(), &(muMap[POI->GetName()]) );
+      if (_saveErrors) {
+	  nllTree->Branch((std::string(POI->GetName()) + "__up").c_str(), &(muErrorUpMap[POI->GetName()]));
+	  nllTree->Branch((std::string(POI->GetName()) + "__down").c_str(), &(muErrorDownMap[POI->GetName()]));
+      }
     }
 
     nllTree->Fill();
